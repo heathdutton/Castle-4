@@ -32,7 +32,7 @@ var load = function(type, name, method, params){
     }    
     // handle modules that only have a simple return /etc/settings.settings
     if (method === undefined){
-        method = name;   
+        method = name;
     }    
     // return function /etc/settings/run()
     if (typeof c4[type][name][method] == 'function'){
@@ -64,6 +64,9 @@ var load = function(type, name, method, params){
     // return other (object/string/array) /etc/settings/test
     } else if (c4[type][name][method] !== undefined){
         return c4[type][name][method];
+    } else if (c4[type][name] !== undefined &&
+        method == name){
+        return c4[type][name]; // likely a core module or a module without an exporting function of the same name
     } else {
         console.log('Error in ' + __filename + ' - object not found: c4.' + type + '.' + name + '.' + method);
     }

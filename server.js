@@ -18,4 +18,5 @@ console.log(
     '========================================================='
 );
 
-c4.load('adapters', 'http');
+// start the HTTP server
+c4.load('adapters', 'http'); 
