@@ -15,3 +15,4 @@ global.c4.load([
 
 
 global.c4.adapters.http.start();
+console.log('working');
