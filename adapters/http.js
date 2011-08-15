@@ -13,7 +13,7 @@ exports.start = function(){
     if (global.c4.core.http.createServer(function(req, res) {
         // here we might put our url handling
         res.writeHead(200, {'Content-Type': 'text/plain'});
-        res.end('Castle 4 - debug running: ' + req.url);
+        res.end('Castle 4 - ' + req.url);
     }).listen(settings.port, settings.host)) {
         console.log('Http server active: http://' + settings.host + ':' + settings.port);
     }
