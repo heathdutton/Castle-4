@@ -17,6 +17,10 @@ try {
 } catch(error) {
     console.log('Error: Cound not load base requirements: ' + error);
 }
+// Elevate the environment to 'beta' if we are not on Cloud9
+if (req.settings.active_env == 'dev' && process.env.C9_PORT === undefined) {
+    req.settings.active_env = 'beta';   
+}
 
 global.c4 = {
     /**
