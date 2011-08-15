@@ -6,7 +6,7 @@
  * declare our global settings here
  */
 exports.settings = { // will be set to global combined with whatever is set as active_env
-    active_env : 'dev', // set to the environment for this deployment
+    active_env : 'cloud9', // set to the environment for this deployment
     env : {
         global : { // where you store global default settings for all environments (they are overridden by chosen env)
             // The following will be treated as from the root for module settings.
@@ -21,8 +21,8 @@ exports.settings = { // will be set to global combined with whatever is set as a
                 }
             }
         },
-        dev : {
-            env_name : 'development',
+        cloud9 : {
+            env_name : 'cloud9',
             adapters : {
                 http : {
                     port : process.env.C9_PORT,
@@ -30,8 +30,8 @@ exports.settings = { // will be set to global combined with whatever is set as a
                 }
             }
         },
-        beta : {
-            env_name : 'beta',
+        joyent : {
+            env_name : 'joyent',
             adapters : {
                 http : {
                     port : 80,
