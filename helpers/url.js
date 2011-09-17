@@ -10,7 +10,6 @@
  */
 exports.parse = function(url){
 	globals.c4.load(['core/url']);
-
 	var parsed = globals.c4.core.url.parse(url);
 	parsed.segments = parsed.pathname.split('/');
 	return parsed;

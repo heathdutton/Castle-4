@@ -19,7 +19,7 @@ try {
 }
 // Elevate the environment to 'beta' if we are not on Cloud9
 if (req.settings.active_env == 'cloud9' && process.env.C9_PORT === undefined) {
-    req.settings.active_env = 'joyent';   
+    req.settings.active_env = 'joyent';
 }
 
 global.c4 = {

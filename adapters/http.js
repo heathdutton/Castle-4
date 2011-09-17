@@ -10,11 +10,11 @@ exports.start = function(){
         'core/http'
     ]);
     var settings = global.c4.settings.adapters.http;
-    if (global.c4.core.http.createServer(function(req, res) {
+    global.c4.core.http.createServer(function(req, res) {
         // here we might put our url handling
         res.writeHead(200, {'Content-Type': 'text/plain'});
         res.end('Castle 4 - ' + req.url);
-    }).listen(settings.port, settings.host)) {
-        console.log('Http server active: http://' + settings.host + ':' + settings.port);
-    }
+        //console.log('user hit: http://' + settings.host + ':' + settings.port + req.url);
+    }).listen(settings.port, settings.host);
+    console.log('Http server active: http://' + settings.host + ':' + settings.port);
 };
