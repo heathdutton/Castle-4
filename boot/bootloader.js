@@ -12,14 +12,11 @@
 try {
     var req = {
         object : require('../helpers/object.js'),
-        settings : require('../etc/settings.js').settings
+        settings : require('../config/global.js').settings,
+        fs : require('fs')
     };
 } catch(error) {
     console.log('Error: Cound not load base requirements: ' + error);
-}
-// Elevate the environment to 'beta' if we are not on Cloud9
-if (req.settings.active_env == 'cloud9' && process.env.C9_PORT === undefined) {
-    req.settings.active_env = 'joyent';
 }
 
 global.c4 = {
@@ -28,7 +25,8 @@ global.c4 = {
      *  'path/of/script.js' : x  (x being the amount of times it has been requested)
      */
     loaded : {
-        'helpers/object.js' : 1 // should be loaded by default since it is required (currently) by this module.
+        'helpers/object.js' : 1, // should be loaded by default since it is required (currently) by this module.
+        'core/fs' : 2
     },
     /** function for loading modules as needed
      * 
@@ -39,8 +37,9 @@ global.c4 = {
         var file = '';
         for (i = 0; i < module_array.length; i++){
             script = module_array[i];
-            if (script.indexOf('../') === 0) script = script.replace('../','');
-            if (script.indexOf('./') === 0) script = script.replace('./','');
+            // I'm going to trust that I won't screw up and put relative paths...
+            //if (script.indexOf('../') === 0) script = script.replace('../','');
+            //if (script.indexOf('./') === 0) script = script.replace('./','');
             // check if we've already loaded this...
             if (global.c4.loaded[script] === undefined){
                 // time to load the script
@@ -53,6 +52,7 @@ global.c4 = {
                         file = '../' + script;
                     }
                     switch (segments.length){
+                        // Handle up to a path depth of 5
                         case 1:
                             global.c4[segments[0]] = require(file);
                         break;
@@ -74,11 +74,12 @@ global.c4 = {
                         case 5:
                             if (global.c4[segments[0]] === undefined) global.c4[segments[0]] = {};
                             if (global.c4[segments[0]][segments[1]] === undefined) global.c4[segments[0]][segments[1]] = {};
+                            if (global.c4[segments[0]][segments[1]][segments[2]] === undefined) global.c4[segments[0]][segments[1]][segments[2]] = {};
                             if (global.c4[segments[0]][segments[1]][segments[2]][segments[3]] === undefined) global.c4[segments[0]][segments[1]][segments[2]][segments[3]] = {};
                             global.c4[segments[0]][segments[1]][segments[2]][segments[3]][segments[4]] = require(file);
                         break;
                         default:
-                            console.log('Error: Script path length unacceptable: "' + module_array[i] + '"');
+                            console.log('Error: Script path too deep: "' + module_array[i] + '"');
                     }
                     global.c4.loaded[script] = 1;
                 } catch(error) {
@@ -96,3 +97,16 @@ global.c4 = {
      */
     settings : req.object.merge(req.settings.env.global, req.settings.env[req.settings.active_env])
 };
+
+/**
+ * Optionally load environmental settings should they exist in a sepperate file (for security reasons, thus excluding them from a repo):
+ * 
+ *  ./config/global.js
+ *      glboal settings
+ *      environmental settings (based on active_env)
+ *  ./config/environment.js (name matching active_env, optional)
+ *  
+ */
+
+
+global.c4.settings = req.object.merge(req.settings.env.global, req.settings.env[req.settings.active_env]);
