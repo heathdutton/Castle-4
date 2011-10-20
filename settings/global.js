@@ -1,20 +1,18 @@
 /**
- * etc/settingsdut9079n
- * 
+ * settings/global.js
  * 
  * You can set environmentally specific settings in this file.
  * 
  * If you need secure settings information, put them in a file with a name matching the active environment:
- * ./config/production.js
- * 
+ * settings/example.js   (see example.js for details)
  */
 
 /**
  * declare our global settings here
  */
-exports.settings = { // will be set to global combined with whatever is set as active_env
-    active_env : 'local', // set to the environment for this deployment
-    env : { 
+exports.settings = { // will be set to global combined with whatever is set as active_environment
+    active_environment : 'local', // set to the environment for this deployment
+    environments : { 
         global : { // where you store global default settings for all environments (they are overridden by chosen env)
             // The following will be treated as from the root for module settings.
             server : {

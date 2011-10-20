@@ -1,8 +1,10 @@
 /**
- * a simple global instance handler
+ * boot/load.js
  * 
- * loads modules
- * loads settings
+ * A simple global instance handler and boot-loader
+ * 
+ * Handles loading modules and settings into a global instance for tracking and performance reasons
+ * 
  */
  
 /**
@@ -11,25 +13,40 @@
  */
 try {
     var req = {
+        settings : require('../settings/global.js').settings,
         object : require('../helpers/object.js'),
-        settings : require('../config/global.js').settings,
-        fs : require('fs')
+        path : require('path')
     };
 } catch(error) {
-    console.log('Error: Cound not load base requirements: ' + error);
+    console.log('Error: Cound not load base requirements for the boot loader: ' + error);
 }
 
 global.c4 = {
     /**
-     * array of loaded scripts, 
-     *  'path/of/script.js' : x  (x being the amount of times it has been requested)
+     * add prereqs to this boot loader to the global c4 object
      */
-    loaded : {
-        'helpers/object.js' : 1, // should be loaded by default since it is required (currently) by this module.
-        'core/fs' : 2
+    helpers : {
+        object: req.object
     },
-    /** function for loading modules as needed
-     * 
+    core : {
+        path : req.path
+    },
+    boot : {
+        load : {
+            /**
+             * name-value pair of loaded scripts in the order they are originally requested 
+             *  'path/of/script.js' : x  (x being the amount of times it has been requested)
+             */
+            loaded : {
+                'settings/global.js' : 1,
+                'helpers/object.js' : 1,
+                'core/path' : 1,
+                'boot/load.js' : 1
+            }
+        }
+    },
+    /**
+     * function for loading modules as needed
      * example of module_array:  [etc.helpers.get, etc.settings]
      */
     load : function(module_array){
@@ -41,7 +58,7 @@ global.c4 = {
             //if (script.indexOf('../') === 0) script = script.replace('../','');
             //if (script.indexOf('./') === 0) script = script.replace('./','');
             // check if we've already loaded this...
-            if (global.c4.loaded[script] === undefined){
+            if (global.c4.boot.load.loaded[script] === undefined){
                 // time to load the script
                 try {
                     // break the path down, but do not use a loop so that we can avoid eval
@@ -55,58 +72,60 @@ global.c4 = {
                         // Handle up to a path depth of 5
                         case 1:
                             global.c4[segments[0]] = require(file);
-                        break;
+                            break;
                         case 2:
                             if (global.c4[segments[0]] === undefined) global.c4[segments[0]] = {};
                             global.c4[segments[0]][segments[1]] = require(file);
-                        break;
+                            break;
                         case 3:
                             if (global.c4[segments[0]] === undefined) global.c4[segments[0]] = {};
                             if (global.c4[segments[0]][segments[1]] === undefined) global.c4[segments[0]][segments[1]] = {};
                             global.c4[segments[0]][segments[1]][segments[2]] = require(file);
-                        break;
+                            break;
                         case 4:
                             if (global.c4[segments[0]] === undefined) global.c4[segments[0]] = {};
                             if (global.c4[segments[0]][segments[1]] === undefined) global.c4[segments[0]][segments[1]] = {};
                             if (global.c4[segments[0]][segments[1]][segments[2]] === undefined) global.c4[segments[0]][segments[1]][segments[2]] = {};
                             global.c4[segments[0]][segments[1]][segments[2]][segments[3]] = require(file);
-                        break;
+                            break;
                         case 5:
                             if (global.c4[segments[0]] === undefined) global.c4[segments[0]] = {};
                             if (global.c4[segments[0]][segments[1]] === undefined) global.c4[segments[0]][segments[1]] = {};
                             if (global.c4[segments[0]][segments[1]][segments[2]] === undefined) global.c4[segments[0]][segments[1]][segments[2]] = {};
                             if (global.c4[segments[0]][segments[1]][segments[2]][segments[3]] === undefined) global.c4[segments[0]][segments[1]][segments[2]][segments[3]] = {};
                             global.c4[segments[0]][segments[1]][segments[2]][segments[3]][segments[4]] = require(file);
-                        break;
+                            break;
                         default:
                             console.log('Error: Script path too deep: "' + module_array[i] + '"');
                     }
-                    global.c4.loaded[script] = 1;
+                    global.c4.boot.load.loaded[script] = 1;
                 } catch(error) {
                     console.log('Error: Could not load: "' + module_array[i] + '" - ' + error);
                 }
             } else {
                 // script is already loaded, up the count of requests by one.
-                global.c4.loaded[script]++;
+                global.c4.boot.load.loaded[script]++;
             }
         }
     },
-    object: req.object,
     /**
      * merge settings based on selected environment
      */
-    settings : req.object.merge(req.settings.env.global, req.settings.env[req.settings.active_env])
+    settings : req.object.merge(
+        req.settings.environments.global, // global settings
+        req.settings.environments[req.settings.active_environment] // settings for the selected environment (still in global.js)
+    )
 };
 
 /**
- * Optionally load environmental settings should they exist in a sepperate file (for security reasons, thus excluding them from a repo):
- * 
- *  ./config/global.js
- *      glboal settings
- *      environmental settings (based on active_env)
- *  ./config/environment.js (name matching active_env, optional)
- *  
+ * Optionally load environmental settings should they exist in a sepperate file
  */
-
-
-global.c4.settings = req.object.merge(req.settings.env.global, req.settings.env[req.settings.active_env]);
+var environmental_settings_file = '../settings/' + req.settings.active_environment + '.js';
+if (global.c4.core.path.existsSync(environmental_settings_file)){
+    try {
+        var env_settings = require(environmental_settings_file).settings;
+        global.c4.settings = req.object.merge(global.c4.settings, env_settings);
+    } catch(error) {
+        console.log('Could not load environmental settings from: "' + environmental_settings_file + '" - ' + error)
+    }
+}
