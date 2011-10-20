@@ -1,0 +1,31 @@
+
+
+C4 object hierarchy:
+
+global.c4.core                 core node.js modules that are pulled in to be re-used
+global.c4.[path].[subpath]     c4 modules (the main body of this app)
+global.c4.third_party.[path]   third party modules
+
+
+mongodb data hierarchy:
+
+c4 >
+    users >
+        [user] >
+            username
+            email
+            password hash
+            
+    apps >
+        [app] >
+            users > (inherits users)
+            data >
+                folders >
+                    [folder] >
+                        statistics >
+                            latest_revision
+                        revisions >
+                            [revision_id]
+                                parent_id
+                                type_of_folder  (refference / path?)
+                data >

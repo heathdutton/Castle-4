@@ -1,5 +1,5 @@
 /**
- * mongodb adaptor
+ * mongodb adaptor - data adaptor making use of node-mongodb-native
  * 
  * This requires mongodb installed in ./third_party/mongodb/
  * To install run the following:
