@@ -50,8 +50,8 @@ global.c4 = {
      * example of module_array:  [etc.helpers.get, etc.settings]
      */
     load : function(module_array){
-        var script = '';
-        var file = '';
+        var script = '',
+            file = '';
         for (i = 0; i < module_array.length; i++){
             script = module_array[i];
             // I'm going to trust that I won't screw up and put relative paths...
