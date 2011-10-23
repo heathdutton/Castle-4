@@ -77,9 +77,10 @@ var c4 = {
                             _id : 555,
                             rev_id : 1234,   // indexed
                             branch_id : id,  // indexed
-                            active : 1,      // will be 0 if this market is deleted/deactivated
-                            short_name : '.com',
-                            full_name : 'mydomain.com',
+                            active : 1,      // will be 0 if this market is deleted/deactivated (user has control of this
+                            verified : 1, // we have verified that this domain is owned by the applicaiton owner in quesiton
+                            domain : 'mydomain.com', // verified by a hard-coded list of domains
+                            sub_path : 'optional/sub/path',  // this will allow multiple c4 applications on a single domain. Optional, not reccomended.
                             default_market : id
                         }
                     ]
