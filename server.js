@@ -10,11 +10,11 @@ require('./boot/load.js');
 
 // Load our requirements
 global.c4.load([
-    'adapters/http.js'//,
-    //'adapters/mongodb.js'
+    'adapters/http.js',
+    'adapters/mongodb.js'
 ]);
 
 
 global.c4.adapters.http.start();
 
-//global.c4.adapters.mongodb.start();
+global.c4.adapters.mongodb.start();

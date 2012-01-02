@@ -16,6 +16,7 @@ var c4 = {
             time : datestamp,
             app : id, // application id, if applicable
             folder_id : id, // folder id, if applicable
+            field_id : id, // field id, if applicable
             path : 'path/user/hit'
         }
     ],
@@ -136,7 +137,8 @@ var c4 = {
                             branch_id : id,  // indexed
                             active : 1,      // will be 0 if this market is deleted/deactivated
                             path : 'path/to/your/sub/page',
-                            redirect_id : 'id'
+                            folder_id : id,  // if applicable
+                            field_id : id    // if applicable
                         }
                     ]
                 }
@@ -202,9 +204,10 @@ var c4 = {
 
 /*
 Url structure (best practices observed):
-    language.domain.market/smart_path/smart_path/entry.format
-    
-    language - blank or www for default. en, gb, fr, etc for other languages
+    branch.domain.market/language/smart_path/smart_path/entry.format
+     
+    branch - blank or www for live, others = other branches. Every branch therefore has a standalone subdomain with access restrictions.
+    language - blank or default. en, gb, fr, etc for other languages
     domain - the mark of your brand
     market - the .com, .co.uk etc, is used to distinguish markets for your company
     smart_path - automatically generated paths and aliases

@@ -3,7 +3,17 @@
  * and open the template in the editor.
  */
 
+// set up our instance (also loads settings)
+require('./boot/load.js');
 
+// Load our requirements
+global.c4.load([
+//    'adapters/http.js',
+    'adapters/mongodb.js'
+]);
+
+
+/*
 var client = new Db('test', new Server("127.0.0.1", 27017, {})),
     test = function (err, collection) {
       collection.insert({a:2}, function(err, docs) {
@@ -26,3 +36,5 @@ var client = new Db('test', new Server("127.0.0.1", 27017, {})),
 client.open(function(err, p_client) {
   client.collection('test_insert', test);
 });
+
+*/

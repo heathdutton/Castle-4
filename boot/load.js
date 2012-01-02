@@ -7,31 +7,46 @@
  * 
  */
  
+
 /**
- * Base requirements: object and settings (which requires object)
+ * Before anything else is run, begin uncaught exception handling
+ */
+var err = require('../boot/error.js');
+err.start();
+
+/**
+ * Load base requirements: object and settings (which requires object)
  * grab object and settings, since we'll need those in everything
  */
 try {
     var req = {
-        settings : require('../settings/global.js').settings,
+        error : err,
+        fs : require('fs'),
+        log : require('../boot/log.js'),
         object : require('../helpers/object.js'),
-        path : require('path')
+        path : require('path'),
+        settings : require('../settings/global.js').settings
     };
 } catch(error) {
     console.log('Error: Cound not load base requirements for the boot loader: ' + error);
 }
 
+/**
+ * Creation of the global C4 object begins here
+ */
 global.c4 = {
     /**
      * add prereqs to this boot loader to the global c4 object
      */
     helpers : {
-        object: req.object
+        object : req.object
     },
     core : {
+        fs : req.fs,
         path : req.path
     },
     boot : {
+        error : req.error,
         load : {
             /**
              * name-value pair of loaded scripts in the order they are originally requested 
@@ -41,9 +56,11 @@ global.c4 = {
                 'settings/global.js' : 1,
                 'helpers/object.js' : 1,
                 'core/path' : 1,
-                'boot/load.js' : 1
+                'boot/load.js' : 1,
+                'boot/log.js' : 1
             }
-        }
+        },
+        log : req.log
     },
     /**
      * function for loading modules as needed
@@ -51,7 +68,7 @@ global.c4 = {
      */
     load : function(module_array){
         var script = '',
-            file = '';
+        file = '';
         for (i = 0; i < module_array.length; i++){
             script = module_array[i];
             // I'm going to trust that I won't screw up and put relative paths...
@@ -96,11 +113,11 @@ global.c4 = {
                             global.c4[segments[0]][segments[1]][segments[2]][segments[3]][segments[4]] = require(file);
                             break;
                         default:
-                            console.log('Error: Script path too deep: "' + module_array[i] + '"');
+                            req.log.out('Script path too deep: "' + module_array[i] + '"', 4);
                     }
                     global.c4.boot.load.loaded[script] = 1;
                 } catch(error) {
-                    console.log('Error: Could not load: "' + module_array[i] + '" - ' + error);
+                    req.log.out('Could not load: "' + module_array[i] + '" - ' + error, 4);
                 }
             } else {
                 // script is already loaded, up the count of requests by one.
@@ -114,11 +131,11 @@ global.c4 = {
     settings : req.object.merge(
         req.settings.environments.global, // global settings
         req.settings.environments[req.settings.active_environment] // settings for the selected environment (still in global.js)
-    )
+        )
 };
 
 /**
- * Optionally load environmental settings should they exist in a sepperate file
+ * Optionally load additional custom environmental settings should they exist in a sepperate file
  */
 var environmental_settings_file = '../settings/' + req.settings.active_environment + '.js';
 if (global.c4.core.path.existsSync(environmental_settings_file)){
@@ -126,6 +143,6 @@ if (global.c4.core.path.existsSync(environmental_settings_file)){
         var env_settings = require(environmental_settings_file).settings;
         global.c4.settings = req.object.merge(global.c4.settings, env_settings);
     } catch(error) {
-        console.log('Could not load environmental settings from: "' + environmental_settings_file + '" - ' + error)
+        req.log.out('Could not load environmental settings from: "' + environmental_settings_file + '" - ' + error, 4)
     }
 }

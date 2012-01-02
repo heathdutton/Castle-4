@@ -17,7 +17,7 @@ exports.settings = { // will be set to global combined with whatever is set as a
             // The following will be treated as from the root for module settings.
             server : {
                 name : 'Castle 4',
-                version : '0.1'
+                version : '0.2'
             },
             adapters : {
                 http : {
@@ -27,9 +27,15 @@ exports.settings = { // will be set to global combined with whatever is set as a
                 mongodb : {
                     port : 27017,
                     host : '127.0.0.1',
-                    database_name : 'castle4',
+                    database_name : 'local',
+                    collection_name : 'castle4',
                     user : 'root',
                     pass : 'root'
+                }
+            },
+            boot : {
+                log : {
+                    console_logging : 1 // define the level of notices 0-4
                 }
             }
         },

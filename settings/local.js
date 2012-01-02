@@ -12,7 +12,7 @@
 exports.settings = {
     adapters : {
         http : {
-            port : 8080 // this settings will override whatever has been set inside global.js, but only when the "example" environment is active
+            port : 80  // this settings will override whatever has been set inside global.js, but only when the "example" environment is active
         }
     }
 };
